@@ -1,0 +1,74 @@
+<form name="productsinrange" method="POST" id="productsinrange" data-mage-init='{
+    "validation":{
+                "rules": {
+                    "fieldname": {
+                        "required":true
+                    }
+                }
+            }
+        }'>
+        <h4>Please complete form below to display products within a price range.</h4>
+        <label>Enter Low Range Price</label>
+        <input type="text"id="low" name="lowrange" class="form-control input-md" autocomplete="off" data-validate='{"required":true, "validate-number":true}' >
+        <br/><br/>
+        <label>Enter High Range Price</label>
+        <input type="text" id="high" name="highrange" class="form-control input-md" autocomplete="off" data-validate='{"required":true, "validate-number":true, "validate-range":true}' >
+        <br/><br/>
+        <label for="dropdown">Choose Sort By Price</label>
+        <select name="dropdown" id="dropdown" data-validate='{"required":true, "validate-no-empty":true}'>
+            <option value=""><?php /* @escapeNotVerified */ echo __('Please Select Options.') ?></option>
+            <option name="ascending" value="Ascending">Ascending (Default)</option>
+            <option name="decending" value="Decending">Decending</option>
+        </select>
+        <br/><br/>
+        <button class="action primary" type="submit" id="formSubmit"  name="form_submit" value="Submit">Submit Range</button>
+</form>
+
+<script>
+require(['jquery', 'mage/validation'],function(){
+    var dataForm = jQuery('#productsinrange');
+    dataForm.mage('validation', {});
+    jQuery(document).ready(function() {
+         dataForm.submit(function(){
+            var status = dataForm.validation('isValid');
+            var lowRangeValue = jQuery("input[name='lowrange']").val();
+            var highRangeValue = jQuery("input[name='highrange']").val();
+            var url = "<?php echo $block->getBaseUrl().'productsinrange/result/result/' ?>";
+            var low = parseInt(jQuery(lowRangeValue ).html());
+            var high = parseInt(jQuery(highRangeValue ).html());
+            var elHigh = jQuery("#high")
+            var inputHigh =  dataForm.find(elHigh);
+            // stops form submit if the value of high price is 5x the value of low price.
+            if(highRangeValue <= (lowRangeValue * 5)){
+                inputHigh.removeClass("mage-error");
+                inputHigh.addClass("valid");
+                jQuery("#highrange-error").remove();
+                // validates form before sending ajax request.
+                if(status){
+                    jQuery.ajax({
+                        url: url,
+                        type: "POST",
+                        data: {lowrange:lowRangeValue,highrange:highRangeValue},
+                        showLoader: true,
+                        cache: false,
+                        success: function(response){
+                            console.log(response.output);
+                            jQuery.post( url, function( response ) {
+                                    window.location.href = url;
+                            });
+                        }
+                    });
+                } 
+            } else {
+                var elHigh = jQuery("#high")
+                elHigh.addClass("mage-error");
+                elHigh.removeClass("valid");
+                elHigh.after( '<div id="highrange-error" class="mage-error">Range must not be greater than 5 times of low range.</div>' );
+                console.log('range is above 5 times the limit');
+                alert('Products price range is above the limit. Please adjust price of High Range Value to not be more than 5x than the value of Low Range Price.')
+            }
+        return false;
+        });
+    });
+});
+</script>

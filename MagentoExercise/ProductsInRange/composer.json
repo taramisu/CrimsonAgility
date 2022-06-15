@@ -1,0 +1,25 @@
+{
+    "name": "magentoexercise/productsinrange",
+    "description": "",
+  
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": "My License",
+    "authors": [
+      {
+        "name": "Tara",
+        "email": "tara.a.cascella@gmail.com",
+        "role": "Developer"
+      }
+    ],
+  
+    "autoload": {
+      "files": [
+        "registration.php"
+      ],
+      "psr-4": {
+        "MagentoExercise\\ProductsInRange\\": ""
+      }
+    }
+  
+  }
